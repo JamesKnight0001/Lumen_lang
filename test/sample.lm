@@ -1,0 +1,54 @@
+import math
+
+struct Vec2:
+    x: f64
+    y: f64
+
+impl Vec2:
+    fn length(self) -> f64:
+        return math.sqrt(self.x * self.x + self.y * self.y)
+
+    fn scaled(self, k):
+        return Vec2(x: self.x * k, y: self.y * k)
+
+fn square(n) = n * n
+
+fn classify(n):
+    if n < 0:
+        return "negative"
+    elif n == 0:
+        return "zero"
+    else:
+        return "positive"
+
+fn main():
+    let count = 42
+    let ratio = 3.14159
+    let big = 1_000_000
+    let sci = 2e3
+    let name = "world"
+    let greeting = f"Hello, {name}! 2+2 = {2 + 2}"
+    let flag = true and not false
+
+    let v = Vec2(x: 3.0, y: 4.0)
+    print(v.length())
+    print(classify(count))
+    print(greeting)
+
+    for i in 0..10:
+        if i % 2 == 0:
+            continue
+        print(i)
+
+    let squares = [x * x for x in 0..6 if x > 0]
+    let label = "even" if count % 2 == 0 else "odd"
+    print(label)
+
+    try:
+        raise f"boom: {count}"
+    catch e:
+        print("caught: " + e)
+
+    let inc = fn(n): n + 1
+    
+    print(inc(square(count)))

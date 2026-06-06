@@ -1,0 +1,111 @@
+{
+  "name": "lumen-lang",
+  "displayName": "Lumen",
+  "description": "Syntax highlighting, indentation, and Run/Build for the Lumen programming language.",
+  "version": "0.3.0",
+  "publisher": "JamesKnight0001",
+  "license": "MIT",
+  "engines": { "vscode": "^1.60.0" },
+  "categories": ["Programming Languages"],
+  "keywords": ["lumen", "lm", "syntax", "highlighting", "run"],
+  "repository": { "type": "git", "url": "https://github.com/JamesKnight0001/Lumen_lang" },
+  "icon": "images/icon.png",
+  "main": "./src/extension.js",
+  "scripts": {
+    "test": "node test/tokenize.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^2.24.0",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.1.0"
+  },
+  "activationEvents": ["onLanguage:lumen"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "lumen",
+        "aliases": ["Lumen", "lumen"],
+        "extensions": [".lm"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./images/icon.png",
+          "dark": "./images/icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "lumen",
+        "scopeName": "source.lumen",
+        "path": "./syntaxes/lumen.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "lumen.run",
+        "title": "Lumen: Run File",
+        "category": "Lumen",
+        "icon": "$(play)"
+      },
+      {
+        "command": "lumen.build",
+        "title": "Lumen: Build & Run Native Executable",
+        "category": "Lumen",
+        "icon": "$(tools)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "lumen.run",
+          "when": "resourceLangId == lumen",
+          "group": "navigation@1"
+        },
+        {
+          "command": "lumen.build",
+          "when": "resourceLangId == lumen",
+          "group": "navigation@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "lumen.run",
+          "when": "resourceLangId == lumen",
+          "group": "lumen@1"
+        },
+        {
+          "command": "lumen.build",
+          "when": "resourceLangId == lumen",
+          "group": "lumen@2"
+        }
+      ],
+      "commandPalette": [
+        { "command": "lumen.run", "when": "resourceLangId == lumen" },
+        { "command": "lumen.build", "when": "resourceLangId == lumen" }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "lumen.run",
+        "key": "f5",
+        "when": "resourceLangId == lumen && !inDebugMode"
+      },
+      {
+        "command": "lumen.build",
+        "key": "ctrl+f5",
+        "when": "resourceLangId == lumen"
+      }
+    ],
+    "configuration": {
+      "title": "Lumen",
+      "properties": {
+        "lumen.path": {
+          "type": "string",
+          "default": "lumen",
+          "description": "Path to the lumen executable. Leave as 'lumen' to auto-detect: the extension uses the per-user install at %LOCALAPPDATA%\\Lumen\\bin\\lumen.exe if present, otherwise 'lumen' on your PATH. Set an absolute path to override (e.g. .../compiler/target/release/lumen.exe)."
+        }
+      }
+    }
+  }
+}

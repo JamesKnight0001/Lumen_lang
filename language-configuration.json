@@ -1,0 +1,56 @@
+{
+  "comments": {
+    "lineComment": "#",
+    "blockComment": ["#[", "]#"]
+  },
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}" },
+    { "open": "[", "close": "]" },
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string", "comment"] },
+    { "open": "'", "close": "'", "notIn": ["string", "comment"] },
+    { "open": "#[", "close": "]#", "notIn": ["string"] }
+  ],
+  "autoCloseBefore": ";:.,=}])>` \n\t",
+  "surroundingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "onEnterRules": [
+    {
+      "comment": "after a line ending in ':' (block opener), add one indent",
+      "beforeText": "^\\s*(fn|if|elif|else|for|while|struct|enum|trait|impl|match|case|try|catch|with|do)\\b.*:\\s*(#.*)?$",
+      "action": { "indent": "indent" }
+    },
+    {
+      "comment": "any other line ending in a bare ':' also opens a block",
+      "beforeText": ":\\s*(#.*)?$",
+      "action": { "indent": "indent" }
+    },
+    {
+      "comment": "after return/break/continue/raise, outdent the next line",
+      "beforeText": "^\\s*(return|break|continue|raise)\\b.*$",
+      "action": { "indent": "outdent" }
+    }
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*.*:\\s*(#.*)?$",
+    "decreaseIndentPattern": "^\\s*(elif|else|case|catch)\\b.*:\\s*(#.*)?$"
+  },
+  "wordPattern": "[A-Za-z_][A-Za-z0-9_]*",
+  "folding": {
+    "offSide": true,
+    "markers": {
+      "start": "^\\s*#\\s*region\\b",
+      "end": "^\\s*#\\s*endregion\\b"
+    }
+  }
+}
