@@ -1,11 +1,9 @@
-// Tests src/compiler.js parseErrors against real `lumen check` stderr formats.
 const path = require("path");
 const C = require(path.join(__dirname, "..", "src", "compiler"));
 
 let fails = 0;
 function ok(c, m) { if (c) console.log("  ok   " + m); else { console.log("  FAIL " + m); fails++; } }
 
-// real outputs captured from lumen.exe 0.71.0
 const cases = [
   {
     name: "parse error with caret (missing colon)",
@@ -37,8 +35,8 @@ for (const c of cases) {
   ok(good, `${c.name} -> ${e ? `L${e.line}:${e.col} "${e.message.slice(0, 40)}"` : "NO MATCH"}`);
 }
 
-// valid output -> no errors
 ok(C.parseErrors("ok.lm: OK (parses and compiles)").length === 0, "valid file -> 0 errors");
 
 if (fails) { console.error(`\n${fails} FAILED`); process.exit(1); }
 console.log("\ncompiler.js: all checks passed.");
+

@@ -1,6 +1,3 @@
-// Validates src/lang.js: node parses both sources, table counts are right, and
-// every builtin/method in lang.js also appears in the grammar (highlight ==
-// autocomplete).
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
@@ -12,7 +9,6 @@ function ok(cond, msg) {
   else { console.log("  FAIL " + msg); fails++; }
 }
 
-// 1) node can parse both sources
 for (const f of ["src/extension.js", "src/lang.js", "src/symbols.js", "src/diagnostics.js", "src/compiler.js", "src/indent.js"]) {
   try {
     execFileSync(process.execPath, ["--check", path.join(ROOT, f)]);
@@ -22,7 +18,6 @@ for (const f of ["src/extension.js", "src/lang.js", "src/symbols.js", "src/diagn
   }
 }
 
-// 2) load lang.js with a minimal vscode stub
 const Module = require("module");
 const stub = new Proxy({}, {
   get(_t, p) {
@@ -46,7 +41,6 @@ const mods = Object.values(lang.MODULES).reduce((a, m) => a + Object.keys(m).len
 ok(mods === 98, `98 module funcs (got ${mods})`);
 ok(Object.keys(lang.MODULES).join(",") === "math,os,rand,time,json,cffi", "modules ok");
 
-// 3) lang.js builtins/methods must exist in the grammar
 const gram = fs.readFileSync(path.join(ROOT, "syntaxes/lumen.tmLanguage.json"), "utf8");
 const has = (w) => new RegExp("[(|]" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[|)]").test(gram);
 for (const b of Object.keys(lang.BUILTINS)) ok(has(b), `grammar has builtin '${b}'`);
@@ -54,3 +48,4 @@ for (const m of Object.keys(lang.METHODS)) ok(has(m), `grammar has method '${m}'
 
 if (fails) { console.error(`\n${fails} check(s) FAILED`); process.exit(1); }
 console.log("\nlang.js: all checks passed.");
+

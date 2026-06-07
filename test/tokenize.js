@@ -41,7 +41,7 @@ async function main() {
       const txt = line.substring(tok.startIndex, tok.endIndex);
       if (!txt.trim()) continue;
       const scopes = tok.scopes.join(" ");
-      // only print tokens that got a meaningful (non-default) scope
+
       if (tok.scopes.length > 1) {
         interesting++;
         console.log(`L${String(i + 1).padStart(2)} ${JSON.stringify(txt).padEnd(22)} ${tok.scopes.slice(1).join(", ")}`);
@@ -52,3 +52,4 @@ async function main() {
   console.log(`\n${interesting} scoped tokens. grammar loaded + tokenized OK.`);
 }
 main().catch((e) => { console.error(e); process.exit(1); });
+

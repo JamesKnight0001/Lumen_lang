@@ -12,12 +12,10 @@ function getTerminal() {
   return term;
 }
 
-// quote a path with spaces
 function quote(p) {
   return /\s/.test(p) ? `"${p}"` : p;
 }
 
-// %LOCALAPPDATA%\Lumen\bin\lumen.exe if it exists (Windows)
 function installedBin() {
   if (process.platform !== "win32") return null;
   const base = process.env.LOCALAPPDATA;
@@ -26,15 +24,13 @@ function installedBin() {
   return fs.existsSync(p) ? p : null;
 }
 
-// setting > installed dir > "lumen" on PATH
 function lumenBin() {
   const cfg = vscode.workspace.getConfiguration("lumen");
   const set = cfg.get("path");
-  if (set && set !== "lumen") return set; // default "lumen" = not set, let auto-detect win
+  if (set && set !== "lumen") return set;
   return installedBin() || "lumen";
 }
 
-// "powershell" | "cmd" | "posix". Matters because PS 5.1 rejects "&&".
 function shellKind() {
   const plat = process.platform;
   const osKey = plat === "win32" ? "windows" : plat === "darwin" ? "osx" : "linux";
@@ -57,21 +53,18 @@ function shellKind() {
   if (/pwsh|powershell/.test(hay)) return "powershell";
   if (/cmd(\.exe)?\b/.test(hay)) return "cmd";
   if (/bash|zsh|sh\b|fish|git.?bash|wsl/.test(hay)) return "posix";
-  return plat === "win32" ? "powershell" : "posix"; // modern VS Code defaults to PS on Windows
+  return plat === "win32" ? "powershell" : "posix";
 }
 
-// run b only if a succeeded; PS 5.1 can't use "&&"
 function chainAnd(a, b, kind) {
   if (kind === "powershell") return `${a}; if ($?) { ${b} }`;
   return `${a} && ${b}`;
 }
 
-// PS needs the call operator to run a quoted exe path
 function invoke(cmd, kind) {
   return kind === "powershell" ? `& ${cmd}` : cmd;
 }
 
-// save and return the active .lm path, or null
 async function activeFile() {
   const ed = vscode.window.activeTextEditor;
   if (!ed || ed.document.languageId !== "lumen") {
@@ -103,7 +96,6 @@ async function run(mode) {
   }
 }
 
-// show the status-bar Run item only for .lm files
 function syncStatus(ed) {
   if (!statusItem) return;
   if (ed && ed.document.languageId === "lumen") statusItem.show();
@@ -125,10 +117,6 @@ function activate(context) {
   context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(syncStatus));
   syncStatus(vscode.window.activeTextEditor);
 
-  // Prefer the Lumenlance LSP server for language intelligence. When it starts,
-  // the server provides completion/hover/diagnostics/symbols/definition/etc.,
-  // so we DON'T also register the in-process providers (avoids duplicates).
-  // The on-Enter indent helper always registers (the server doesn't do it).
   const cfg = vscode.workspace.getConfiguration();
   let lspStarted = false;
   if (cfg.get("lumen.lsp.enabled") !== false) {
@@ -141,12 +129,13 @@ function activate(context) {
   context.subscriptions.push({ dispose: () => stopClient() });
 
   if (lspStarted) {
-    require("./indent").register(context); // server doesn't cover on-Enter dedent
+    require("./indent").register(context);
   } else {
-    require("./lang").register(context); // full in-process fallback (incl. indent)
+    require("./lang").register(context);
   }
 }
 
 function deactivate() {}
 
 module.exports = { activate, deactivate };
+

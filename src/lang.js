@@ -1,14 +1,6 @@
-// Lumen language intelligence: completion, hover, signature help.
-//
-// Tables are taken verbatim from the compiler so we never suggest what it
-// rejects: keywords <- lexer.rs keyword(); builtins <- interp/codegen dispatch
-// (no "sorted"); methods <- interp dispatch + desugared map/filter; modules
-// <- builtins.rs MODULE_FUNCS. Re-sync if the compiler surface changes.
-
 const vscode = require("vscode");
 const syms = require("./symbols");
 
-// keywords (lexer.rs)
 const KW = [
   "let", "mut", "fn", "if", "elif", "else", "for", "in", "while", "return",
   "match", "case", "struct", "enum", "trait", "impl", "import", "from", "as",
@@ -17,13 +9,11 @@ const KW = [
   "with",
 ];
 
-// type names
 const TYPES = [
   "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64",
   "int", "float", "bool", "str", "list", "map", "ptr",
 ];
 
-// 19 global builtins -> {sig, doc}
 const BUILTINS = {
   print:    { sig: "print(*args)",        doc: "Print values space-separated, then a newline." },
   len:      { sig: "len(x) -> int",       doc: "Length of a str, list, or map." },
@@ -46,7 +36,6 @@ const BUILTINS = {
   drop:     { sig: "drop(x)",             doc: "Release a value / resource." },
 };
 
-// 29 methods (string/list/map)
 const METHODS = {
   len:         "len() -> int",
   upper:       "upper() -> str",
@@ -79,7 +68,6 @@ const METHODS = {
   remove:      "remove(key)",
 };
 
-// modules (MODULE_FUNCS): name -> arity (0 = constant)
 const MODULES = {
   math: {
     sqrt: 1, sin: 1, cos: 1, tan: 1, abs: 1, floor: 1, ceil: 1, pow: 2,
@@ -107,7 +95,6 @@ const MODULES = {
 };
 const MODS = Object.keys(MODULES);
 
-// block-opener snippets: [trigger, body, label]
 const SNIPS = [
   ["fn",     "fn ${1:name}(${2:args}):\n\t$0",             "function"],
   ["if",     "if ${1:cond}:\n\t$0",                        "if"],
@@ -148,7 +135,7 @@ function snipItem([trig, body, label]) {
   const it = new vscode.CompletionItem(trig, C.Snippet);
   it.detail = label;
   it.insertText = new vscode.SnippetString(body);
-  it.sortText = "0" + trig; // float to top
+  it.sortText = "0" + trig;
   return it;
 }
 function modItem(name) {
@@ -173,7 +160,6 @@ function methItem(name) {
   return it;
 }
 
-// what's just left of the cursor: a module qualifier, a generic dot, or nothing
 function ctxAt(doc, pos) {
   const line = doc.lineAt(pos.line).text.slice(0, pos.character);
   const m = line.match(/\b([a-z]+)\.([A-Za-z_][A-Za-z0-9_]*)?$/);
@@ -229,14 +215,14 @@ const hover = {
     }
     if (KW.includes(word)) return new vscode.Hover(`**${word}** - keyword`, range);
     if (TYPES.includes(word)) return new vscode.Hover(`**${word}** - type`, range);
-    return syms.userHover(doc, pos); // user-defined fn/var/struct/field
+    return syms.userHover(doc, pos);
   },
 };
 
 const sigHelp = {
   provideSignatureHelp(doc, pos) {
     const line = doc.lineAt(pos.line).text.slice(0, pos.character);
-    // innermost unclosed "("
+
     let depth = 0, open = -1;
     for (let i = line.length - 1; i >= 0; i--) {
       const ch = line[i];
@@ -265,7 +251,7 @@ const sigHelp = {
     const sig = new vscode.SignatureInformation(label, doc2 ? new vscode.MarkdownString(doc2) : undefined);
     const inside = label.slice(label.indexOf("(") + 1, label.lastIndexOf(")"));
     sig.parameters = inside.split(",").map((p) => new vscode.ParameterInformation(p.trim()));
-    const active = (line.slice(open + 1).match(/,/g) || []).length; // commas since "("
+    const active = (line.slice(open + 1).match(/,/g) || []).length;
     const help = new vscode.SignatureHelp();
     help.signatures = [sig];
     help.activeSignature = 0;
@@ -281,9 +267,10 @@ function register(context) {
     vscode.languages.registerHoverProvider(sel, hover),
     vscode.languages.registerSignatureHelpProvider(sel, sigHelp, "(", ",")
   );
-  syms.register(context); // go-to-definition + outline
-  require("./diagnostics").register(context, module.exports); // compiler-backed errors
-  require("./indent").register(context); // experimental smart on-Enter dedent
+  syms.register(context);
+  require("./diagnostics").register(context, module.exports);
+  require("./indent").register(context);
 }
 
 module.exports = { register, KW, TYPES, BUILTINS, METHODS, MODULES };
+

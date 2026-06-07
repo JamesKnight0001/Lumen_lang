@@ -1,7 +1,3 @@
-// Copies the freshly built Lumenlance server binary into Lumen_lang/server/ so
-// `vsce package` packs it. Run after `cargo build --release` in the server.
-// Skips quietly (exit 0) if the binary isn't built yet, so `npm test` and dev
-// installs don't fail when the server is optional.
 const fs = require("fs");
 const path = require("path");
 
@@ -30,3 +26,4 @@ if (!fs.existsSync(src)) {
 fs.mkdirSync(dstDir, { recursive: true });
 fs.copyFileSync(src, dst);
 console.log(`bundled ${dst}`);
+

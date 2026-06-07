@@ -1,6 +1,3 @@
-// Tests src/diagnostics.js: MUST produce zero "not defined" warnings on the
-// real, valid example .lm files (no false positives), and MUST flag a genuine
-// undefined use. Stubs vscode.
 const fs = require("fs");
 const path = require("path");
 const Module = require("module");
@@ -32,8 +29,6 @@ function fakeDoc(src, file) {
   return { getText: () => src, languageId: "lumen", uri: { fsPath: file || "t.lm" } };
 }
 
-// 1) zero false positives across the real example tree (recursive: includes the
-//    multi-file projects with cross-file imports)
 const exDir = path.join("C:", "Users", "irene", "OneDrive", "Desktop", "Z", "Lumen", "examples");
 function walk(d) {
   let out = [];
@@ -60,29 +55,24 @@ for (const file of sweep) {
 }
 ok(fp === 0, `no false positives across ${scanned} files (got ${fp})`);
 
-// 1b) explicit number/comment edge cases must NOT flag
 const edge = `#[\na block comment spanning lines\n]#\nfn main():\n    print(1.5e-3, 2.0e10, 1_000_000)\n`;
 const de = diag.check(fakeDoc(edge), lang);
 ok(de.length === 0, `block comment + sci/underscore numbers clean (got ${de.length}: ${de.map(d=>d.message).join("; ")})`);
 
-// 1c) cross-file: a name imported from a sibling .lm must NOT be flagged
 const stocksim = path.join(exDir, "stocksim", "main.lm");
 if (fs.existsSync(stocksim)) {
   const ds = diag.check(fakeDoc(fs.readFileSync(stocksim, "utf8"), stocksim), lang);
   ok(ds.length === 0, `cross-file imports (stocksim/main.lm) clean (got ${ds.length})`);
 }
 
-// 2) flags a genuine undefined use
 const bad = `fn main():\n    print(undeclared_thing)\n`;
 const ds = diag.check(fakeDoc(bad), lang);
 ok(ds.some((d) => /undeclared_thing/.test(d.message)), "flags 'undeclared_thing'");
 
-// 3) does NOT flag a forward-referenced function, a param, or a member access
 const fwd = `fn main():\n    let p = Point(1, 2)\n    print(p.x)\n    helper(p)\nfn helper(q):\n    return q\nstruct Point:\n    x: i64\n    y: i64\n`;
 const ds3 = diag.check(fakeDoc(fwd), lang);
 ok(ds3.length === 0, `forward refs / params / members clean (got ${ds3.length}: ${ds3.map(d=>d.message).join("; ")})`);
 
-// 4) enum variants are defined; only a real unknown is flagged
 const en = `enum Color:\n    Red\n    Green\nfn main():\n    let c = Color.Red\n    match c:\n        case Red:\n            print(1)\n    print(reallyUndefined)\n`;
 const ds4 = diag.check(fakeDoc(en), lang);
 ok(ds4.length === 1 && /reallyUndefined/.test(ds4[0].message),
@@ -90,3 +80,4 @@ ok(ds4.length === 1 && /reallyUndefined/.test(ds4[0].message),
 
 if (fails) { console.error(`\n${fails} FAILED`); process.exit(1); }
 console.log("\ndiagnostics.js: all checks passed.");
+

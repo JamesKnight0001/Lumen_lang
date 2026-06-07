@@ -1,15 +1,8 @@
-// Live diagnostics: flag identifiers that are used but never declared/imported
-// ("X is not defined"), Python-style. Deliberately CONSERVATIVE: we only flag a
-// bare identifier in a value/call position that matches nothing we can see, so
-// valid programs stay clean. Anything after a "." (method/field), inside a
-// string or comment, or used as a struct-field label is skipped.
-
 const vscode = require("vscode");
 const syms = require("./symbols");
 const fs = require("fs");
 const path = require("path");
 
-// always-defined names: builtins, keywords, types, module roots, literals
 function baseNames(lang) {
   const s = new Set();
   for (const k of lang.KW) s.add(k);
@@ -20,7 +13,6 @@ function baseNames(lang) {
   return s;
 }
 
-// resolve a module path ("rng", "lib.mathx") to a sibling .lm file
 function resolveModule(dir, mod) {
   const rel = mod.split(".").join(path.sep) + ".lm";
   const cands = [path.join(dir, rel), path.join(dir, mod.split(".").pop() + ".lm")];
@@ -28,9 +20,6 @@ function resolveModule(dir, mod) {
   return null;
 }
 
-// top-level (non-local) symbol names exported by an imported .lm file.
-// `import X` in Lumen exposes X's top-level fns/structs unqualified, so we add
-// them. Recurses one level only (re-exports are rare); guarded by `seen`.
 function importedNames(doc, seen) {
   const names = new Set();
   let dir;
@@ -54,8 +43,6 @@ function importedNames(doc, seen) {
   return names;
 }
 
-// blank out strings and comments on a line so we don't scan inside them.
-// keeps length so columns stay correct.
 function strip(line) {
   let out = "";
   let i = 0;
@@ -72,7 +59,7 @@ function strip(line) {
       if (i < line.length) { out += " "; i++; }
       continue;
     }
-    // f-string prefix: blank the leading f so it isn't seen as an identifier
+
     if ((c === "f") && (line[i + 1] === '"' || line[i + 1] === "'")) { out += " "; i++; continue; }
     out += c; i++;
   }
@@ -84,18 +71,17 @@ const WORD = /[A-Za-z_][A-Za-z0-9_]*/g;
 function check(doc, lang) {
   const defined = baseNames(lang);
   for (const s of syms.scan(doc)) defined.add(s.name);
-  // names brought in by imports of sibling .lm files (cross-file)
+
   for (const n of importedNames(doc, new Set())) defined.add(n);
 
   const text = doc.getText();
   const lines = text.split(/\r?\n/);
   const diags = [];
-  let inBlock = false; // inside a #[ ]# multi-line comment
+  let inBlock = false;
 
   for (let ln = 0; ln < lines.length; ln++) {
     const raw = lines[ln];
 
-    // multi-line #[ ]# block comment: skip every line until the closer
     if (inBlock) {
       if (raw.includes("]#")) inBlock = false;
       continue;
@@ -115,20 +101,17 @@ function check(doc, lang) {
       const prev = line[start - 1];
       const after = line.slice(end);
 
-      if (prev === ".") continue;               // member access: x.foo
-      if (prev && /[0-9.]/.test(prev)) continue; // number tail: 2.0e10 -> "e10", 1_000_000 -> "_000_000"
-      if (/^\d/.test(word)) continue;            // number-led (guard)
-      if (defined.has(word)) continue;           // known
+      if (prev === ".") continue;
+      if (prev && /[0-9.]/.test(prev)) continue;
+      if (/^\d/.test(word)) continue;
+      if (defined.has(word)) continue;
 
-      // skip a declaration site itself (let X, fn X, struct X, param, field label)
       const before = line.slice(0, start);
       if (/\b(let|mut|fn|struct|enum|trait|impl|import|as)\s+$/.test(before)) continue;
       if (/\bfrom\s+\S+\s+import\s+$/.test(before)) continue;
-      // struct-field label inside a call/decl:  Name(x: ..)  or  x: type
+
       if (/^\s*:/.test(after) && !/^\s*::/.test(after)) continue;
 
-      // f-string interpolation braces etc. are already stripped; remaining bare
-      // unknown identifier in a value position -> flag it.
       const range = new vscode.Range(ln, start, ln, end);
       diags.push(new vscode.Diagnostic(
         range, `'${word}' is not defined`, vscode.DiagnosticSeverity.Warning));
@@ -137,19 +120,18 @@ function check(doc, lang) {
   return diags;
 }
 
-// Convert a compiler error to a VSCode Diagnostic with a precise range.
 function toDiag(doc, e) {
   const lineIdx = Math.max(0, (e.line || 1) - 1);
   let startCh = e.col || 0;
   let endCh = e.endCol;
   try {
     const text = doc.lineAt(lineIdx).text;
-    // no caret width: underline from the column to end of the trimmed line
+
     if (endCh == null) {
       const trimmedEnd = text.replace(/\s+$/, "").length;
       endCh = Math.max(startCh + 1, trimmedEnd);
     }
-    // clamp to the line
+
     startCh = Math.min(startCh, text.length);
     endCh = Math.min(Math.max(endCh, startCh + 1), Math.max(text.length, startCh + 1));
   } catch (_) { endCh = (endCh == null) ? startCh + 1 : endCh; }
@@ -167,7 +149,7 @@ function register(context, lang) {
   context.subscriptions.push(col);
 
   const getCfg = () => vscode.workspace.getConfiguration("lumen").get("path");
-  const versions = new Map(); // uri -> last dispatched run id (to drop stale results)
+  const versions = new Map();
 
   const run = (doc) => {
     if (!doc || doc.languageId !== "lumen") return;
@@ -180,8 +162,8 @@ function register(context, lang) {
 
     const realPath = (doc.uri && doc.uri.fsPath) || null;
     compiler.checkSource(doc.getText(), realPath, getCfg, (res) => {
-      if (versions.get(key) !== id) return;            // a newer run superseded us
-      if (res.unavailable) {                            // no compiler -> regex fallback
+      if (versions.get(key) !== id) return;
+      if (res.unavailable) {
         col.set(doc.uri, check(doc, lang));
         return;
       }
@@ -189,7 +171,6 @@ function register(context, lang) {
     });
   };
 
-  // debounce live checks ~400ms after the last edit (runs the compiler async)
   const timers = new Map();
   const runSoon = (doc) => {
     if (!doc || doc.languageId !== "lumen") return;
@@ -209,3 +190,4 @@ function register(context, lang) {
 }
 
 module.exports = { register, check, strip };
+

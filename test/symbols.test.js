@@ -1,12 +1,9 @@
-// Tests src/symbols.js parser: parents, kinds, and resolve() against the real
-// 09_structs.lm shape. Stubs the vscode API enough to run headless.
 const path = require("path");
 const Module = require("module");
 
 let fails = 0;
 function ok(c, m) { if (c) console.log("  ok   " + m); else { console.log("  FAIL " + m); fails++; } }
 
-// minimal vscode stub
 const stub = {
   SymbolKind: { Method: "Method", Function: "Function", Struct: "Struct", Enum: "Enum",
     Interface: "Interface", Field: "Field", Module: "Module", Variable: "Variable" },
@@ -37,7 +34,7 @@ fn main():
     let p = Point(3, 4)
     print(p.dist_sq())
 `;
-// fake doc
+
 const lines = src.split("\n");
 const doc = {
   getText: () => src,
@@ -56,7 +53,6 @@ ok(find("dist_sq").some((s) => s.kind === "Method" && s.parent === "Point"),
 ok(find("main").some((s) => s.kind === "Function" && !s.parent), "main is a top-level function");
 ok(find("p").some((s) => s.kind === "Variable"), "p parsed as variable");
 
-// resolve: 'dist_sq' used on line of print() should resolve to its decl
 const r = S.resolve(syms, "dist_sq", 12);
 ok(r && r.parent === "Point", "resolve(dist_sq) -> method of Point");
 
@@ -65,3 +61,4 @@ ok(rp && rp.detail.startsWith("let p"), "resolve(p) -> let binding");
 
 if (fails) { console.error(`\n${fails} FAILED`); process.exit(1); }
 console.log("\nsymbols.js: all checks passed.");
+
