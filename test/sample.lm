@@ -1,54 +1,56 @@
+# sample.lm s- exercises every grammar rule (used by test/tokenize.js)
+#[
+a block comment
+   spanning lines
+]#
 import math
+import os
+from cffi import cbuf
 
-struct Vec2:
+extern "C" from "msvcrt.dll":
+    fn sqrt(x: f64) -> f64
+    fn pow(base: f64, exp: f64) -> f64
+
+struct Point:
     x: f64
     y: f64
 
-impl Vec2:
-    fn length(self) -> f64:
+impl Point:
+    fn dist(self) -> f64:
         return math.sqrt(self.x * self.x + self.y * self.y)
 
-    fn scaled(self, k):
-        return Vec2(x: self.x * k, y: self.y * k)
-
-fn square(n) = n * n
-
-fn classify(n):
-    if n < 0:
-        return "negative"
-    elif n == 0:
-        return "zero"
+fn classify(n: i64) -> str:
+    if n > 0 and n < 10:
+        return "small"
+    elif n >= 10:
+        return "big"
     else:
-        return "positive"
+        return "neg"
 
 fn main():
-    let count = 42
-    let ratio = 3.14159
-    let big = 1_000_000
-    let sci = 2e3
-    let name = "world"
-    let greeting = f"Hello, {name}! 2+2 = {2 + 2}"
-    let flag = true and not false
-
-    let v = Vec2(x: 3.0, y: 4.0)
-    print(v.length())
-    print(classify(count))
-    print(greeting)
-
-    for i in 0..10:
-        if i % 2 == 0:
-            continue
-        print(i)
-
-    let squares = [x * x for x in 0..6 if x > 0]
-    let label = "even" if count % 2 == 0 else "odd"
-    print(label)
-
+    let nums = [3, 1, 4, 1, 5, 9]
+    nums.sort()
+    nums.reverse()
+    let evens = nums.filter(fn(v): v % 2 == 0)
+    let doubled = nums.map(fn(v): v * 2)
+    print(len(nums))
+    print(nums.contains(4))
+    print(math.pi())
+    print(math.gcd(12, 18))
+    print(os.cwd())
+    let m = {"a": 1, "b": 2}
+    print(m.keys())
+    print(m.get("a", 0))
+    print(m.has("b"))
+    let s = "Hello, World"
+    print(s.upper().split(",").join(" | "))
+    let p = Point(x: 3.0, y: 4.0)
+    print(f"dist = {p.dist()} for {s.lower()}")
+    print(1.5e-3, 2.0e10, 1_000_000)   # floats w/ exponent + underscored int
+    let r = sqrt(2.0)        # FFI call
+    for i in 0..len(nums):
+        print(i, nums[i])
     try:
-        raise f"boom: {count}"
+        raise "boom"
     catch e:
-        print("caught: " + e)
-
-    let inc = fn(n): n + 1
-    
-    print(inc(square(count)))
+        print(e)
