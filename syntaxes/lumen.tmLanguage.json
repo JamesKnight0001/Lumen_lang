@@ -1,0 +1,332 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Lumen",
+  "scopeName": "source.lumen",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#extern" },
+    { "include": "#definitions" },
+    { "include": "#keywords" },
+    { "include": "#constants" },
+    { "include": "#numbers" },
+    { "include": "#types" },
+    { "include": "#builtins" },
+    { "include": "#module-call" },
+    { "include": "#modules" },
+    { "include": "#method-call" },
+    { "include": "#struct-construction" },
+    { "include": "#function-call" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.lumen",
+          "begin": "#\\[",
+          "end": "\\]#",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.begin.lumen" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.end.lumen" } }
+        },
+        {
+          "name": "comment.line.number-sign.lumen",
+          "begin": "#",
+          "end": "$",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.lumen" } }
+        }
+      ]
+    },
+
+    "strings": {
+      "patterns": [
+        { "include": "#fstring-double" },
+        { "include": "#fstring-single" },
+        { "include": "#string-double" },
+        { "include": "#string-single" }
+      ]
+    },
+    "string-double": {
+      "name": "string.quoted.double.lumen",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.lumen" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.lumen" } },
+      "patterns": [ { "include": "#string-escape" } ]
+    },
+    "string-single": {
+      "name": "string.quoted.single.lumen",
+      "begin": "'",
+      "end": "'",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.lumen" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.lumen" } },
+      "patterns": [ { "include": "#string-escape" } ]
+    },
+    "fstring-double": {
+      "name": "string.interpolated.double.lumen",
+      "begin": "\\b(f)(\")",
+      "end": "\"",
+      "beginCaptures": {
+        "1": { "name": "storage.type.string.lumen" },
+        "2": { "name": "punctuation.definition.string.begin.lumen" }
+      },
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.lumen" } },
+      "patterns": [
+        { "include": "#string-escape" },
+        { "include": "#interpolation" }
+      ]
+    },
+    "fstring-single": {
+      "name": "string.interpolated.single.lumen",
+      "begin": "\\b(f)(')",
+      "end": "'",
+      "beginCaptures": {
+        "1": { "name": "storage.type.string.lumen" },
+        "2": { "name": "punctuation.definition.string.begin.lumen" }
+      },
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.lumen" } },
+      "patterns": [
+        { "include": "#string-escape" },
+        { "include": "#interpolation" }
+      ]
+    },
+    "string-escape": {
+      "name": "constant.character.escape.lumen",
+      "match": "\\\\(n|t|r|\\\\|\"|'|0|\\{|\\})"
+    },
+    "interpolation": {
+      "name": "meta.interpolation.lumen",
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": { "0": { "name": "punctuation.section.interpolation.begin.lumen" } },
+      "endCaptures": { "0": { "name": "punctuation.section.interpolation.end.lumen" } },
+      "patterns": [
+        { "include": "#keywords" },
+        { "include": "#constants" },
+        { "include": "#numbers" },
+        { "include": "#strings" },
+        { "include": "#builtins" },
+        { "include": "#function-call" },
+        { "include": "#operators" }
+      ]
+    },
+
+    "definitions": {
+      "patterns": [
+        {
+          "comment": "fn name(...) definition",
+          "match": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.function.lumen" },
+            "2": { "name": "entity.name.function.lumen" }
+          }
+        },
+        {
+          "comment": "struct / enum / trait declaration",
+          "match": "\\b(struct|enum|trait)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.lumen" },
+            "2": { "name": "entity.name.type.lumen" }
+          }
+        },
+        {
+          "comment": "impl block",
+          "match": "\\b(impl)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.lumen" },
+            "2": { "name": "entity.name.type.lumen" }
+          }
+        },
+        {
+          "comment": "return type arrow annotation",
+          "match": "(->)\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.operator.arrow.lumen" },
+            "2": { "name": "entity.name.type.lumen" }
+          }
+        }
+      ]
+    },
+
+    "extern": {
+      "comment": "extern \"C\" from \"lib.dll\": header s- tag the ABI distinctly. The lib/ABI strings are also picked up by #strings; this adds the keyword + ABI scoping.",
+      "match": "\\b(extern)\\b(?:\\s+(\"[^\"]*\"))?\\s*(from)?",
+      "captures": {
+        "1": { "name": "storage.modifier.extern.lumen" },
+        "2": { "name": "string.quoted.double.abi.lumen" },
+        "3": { "name": "keyword.control.import.lumen" }
+      }
+    },
+
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.lumen",
+          "match": "\\b(if|elif|else|for|while|in|return|break|continue|match|case|try|catch|raise|with|do|end)\\b"
+        },
+        {
+          "name": "keyword.control.import.lumen",
+          "match": "\\b(import|from|as|export)\\b"
+        },
+        {
+          "name": "storage.type.lumen",
+          "match": "\\b(fn|let|mut|struct|enum|trait|impl|extern|dynamic|weak)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.lumen",
+          "match": "\\b(and|or|not|in)\\b"
+        },
+        {
+          "name": "variable.language.self.lumen",
+          "match": "\\b(self)\\b"
+        }
+      ]
+    },
+
+    "constants": {
+      "patterns": [
+        { "name": "constant.language.boolean.lumen", "match": "\\b(true|false)\\b" },
+        { "name": "constant.language.nil.lumen", "match": "\\b(nil)\\b" }
+      ]
+    },
+
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.lumen",
+          "match": "\\b[0-9][0-9_]*(\\.[0-9][0-9_]*([eE][+-]?[0-9]+)?|[eE][+-]?[0-9]+)\\b"
+        },
+        {
+          "name": "constant.numeric.integer.lumen",
+          "match": "\\b[0-9][0-9_]*\\b"
+        }
+      ]
+    },
+
+    "types": {
+      "name": "support.type.lumen",
+      "match": "\\b(i8|i16|i32|i64|u8|u16|u32|u64|f32|f64|int|float|bool|str|list|map|ptr|struct|nil|fn)\\b(?=\\s*[,)\\]:=\\n]|\\s*$)"
+    },
+
+    "builtins": {
+      "patterns": [
+        {
+          "comment": "global builtin functions, only when called",
+          "name": "support.function.builtin.lumen",
+          "match": "\\b(print|len|str|int|float|type|input|range|sum|min|max|abs|ord|chr|is_digit|is_alpha|is_space|assert|drop)\\b(?=\\s*\\()"
+        }
+      ]
+    },
+
+    "module-call": {
+      "comment": "Built-in module member calls (math.sqrt, os.read, ...). Each module's function name set is taken verbatim from the compiler's builtins table so unknown members (e.g. math.foo) are NOT highlighted as builtins.",
+      "patterns": [
+        {
+          "match": "\\b(math)\\b(\\.)(sqrt|cbrt|sin|cos|tan|asin|acos|atan2|atan|sinh|cosh|tanh|abs|floor|ceil|round|trunc|sign|pow|log10|log1p|log2|log|exp|expm1|pi|tau|inf|e|deg|rad|hypot|fmod|copysign|isnan|isinf|isfinite|gcd|lcm|factorial|min|max)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
+          "match": "\\b(os)\\b(\\.)(read|write|append|exists|is_file|is_dir|remove|rmdir|rename|mkdir|listdir|getenv|setenv|cwd|time|clock|getpid|sep|platform|system|exec|exit|args)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
+          "match": "\\b(rand)\\b(\\.)(seed|int|float)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
+          "match": "\\b(time)\\b(\\.)(now|format|sleep)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
+          "match": "\\b(json)\\b(\\.)(stringify|parse)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
+          "match": "\\b(net)\\b(\\.)(listen|accept|connect|udp|send|recv|sendto|recvfrom|close|shutdown|set_timeout|set_blocking|set_opt|poll|resolve|local_port|errno)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
+          "match": "\\b(cffi)\\b(\\.)(cbuf|len|addr|set_i8|set_i16|set_i32|set_i64|set_ptr|set_f32|set_f64|get_i8|get_i16|get_i32|get_i64|get_ptr|get_f32|get_f64|peek_i64|peek_i32|poke_i64|poke_i32|str_ptr|guid|vcall|callback)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        }
+      ]
+    },
+
+    "modules": {
+      "comment": "built-in module namespaces, when used as a bare qualifier",
+      "name": "support.class.module.lumen",
+      "match": "\\b(math|os|rand|json|time|net|cffi)\\b(?=\\s*\\.)"
+    },
+
+    "method-call": {
+      "comment": "Built-in string/list/map methods, taken verbatim from the compiler's method dispatch (interp.rs) plus the desugared map/filter. Only highlights after a dot and before a paren, so user methods still fall through to the generic call rule.",
+      "match": "(\\.)(len|upper|lower|title|contains|find|replace|starts_with|ends_with|lstrip|rstrip|trim|split|repeat|join|push|pop|insert|index|count|map|filter|sort|reverse|has|get|keys|values|remove)\\b(?=\\s*\\()",
+      "captures": {
+        "1": { "name": "punctuation.accessor.lumen" },
+        "2": { "name": "support.function.builtin.method.lumen" }
+      }
+    },
+
+    "struct-construction": {
+      "comment": "Capitalized identifier followed by ( -> a struct constructor / type",
+      "match": "\\b([A-Z][A-Za-z0-9_]*)\\b(?=\\s*\\()",
+      "name": "entity.name.type.lumen"
+    },
+
+    "function-call": {
+      "comment": "identifier immediately followed by ( is a call",
+      "match": "\\b([a-z_][A-Za-z0-9_]*)\\b(?=\\s*\\()",
+      "name": "entity.name.function.call.lumen"
+    },
+
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.arrow.lumen", "match": "->" },
+        { "name": "keyword.operator.assignment.compound.lumen", "match": "(\\+=|-=|\\*=|/=|%=)" },
+        { "name": "keyword.operator.comparison.lumen", "match": "(==|!=|<=|>=|<|>)" },
+        { "name": "keyword.operator.range.lumen", "match": "\\.\\." },
+        { "name": "keyword.operator.arithmetic.lumen", "match": "(\\*\\*|\\+|-|\\*|/|%)" },
+        { "name": "keyword.operator.assignment.lumen", "match": "=" }
+      ]
+    },
+
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.separator.lumen", "match": "[,:]" },
+        { "name": "punctuation.accessor.lumen", "match": "\\." },
+        { "name": "meta.brace.round.lumen", "match": "[()]" },
+        { "name": "meta.brace.square.lumen", "match": "[\\[\\]]" },
+        { "name": "meta.brace.curly.lumen", "match": "[{}]" }
+      ]
+    }
+  }
+}

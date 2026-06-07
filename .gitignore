@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+*.vsix
+out/
+dist/
+*.tsbuildinfo
+
+# Bundled language server binary (build artifact)
+server/
+
+# Editor / OS
+.vscode-test/
+.DS_Store
+Thumbs.db
+*.log
+./test/

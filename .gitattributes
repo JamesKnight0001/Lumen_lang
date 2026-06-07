@@ -1,0 +1,4 @@
+# Lumen source must stay LF: the lexer treats CR as an unexpected token.
+*.lm text eol=lf
+*.js text eol=lf
+*.json text eol=lf
