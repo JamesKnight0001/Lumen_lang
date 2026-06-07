@@ -1,8 +1,8 @@
 {
   "name": "lumen-lang",
   "displayName": "Lumen",
-  "description": "Syntax highlighting, indentation, and Run/Build for the Lumen programming language.",
-  "version": "0.4.0",
+  "description": "Syntax highlighting, indentation, autocomplete, hover, go-to-definition, compiler-backed diagnostics, and Run/Build for the Lumen programming language.",
+  "version": "0.9.0",
   "publisher": "JamesKnight0001",
   "license": "MIT",
   "engines": { "vscode": "^1.60.0" },
@@ -12,8 +12,13 @@
   "icon": "images/icon.png",
   "main": "./src/extension.js",
   "scripts": {
-    "test": "node test/tokenize.js",
+    "test": "node test/tokenize.js && node test/lang.test.js && node test/symbols.test.js && node test/diagnostics.test.js && node test/compiler.test.js && node test/indent.test.js",
+    "build-server": "node scripts/bundle-server.js",
+    "prepackage": "node scripts/bundle-server.js",
     "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@vscode/vsce": "^2.24.0",
@@ -104,7 +109,32 @@
           "type": "string",
           "default": "lumen",
           "description": "Path to the lumen executable. Leave as 'lumen' to auto-detect: the extension uses the per-user install at %LOCALAPPDATA%\\Lumen\\bin\\lumen.exe if present, otherwise 'lumen' on your PATH. Set an absolute path to override (e.g. .../compiler/target/release/lumen.exe)."
+        },
+        "lumen.diagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show live errors from the Lumen compiler (`lumen check`): syntax errors, undefined names, bad methods, arity mismatches. Runs ~400ms after you stop typing and on save."
+        },
+        "lumen.smartDedent": {
+          "type": "boolean",
+          "default": true,
+          "description": "Experimental: after a return/break/continue/raise, dedent the next line by one level on Enter (requires editor.formatOnType, which this extension enables for Lumen by default)."
+        },
+        "lumen.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use the Lumenlance language server for richer intelligence (completion, hover with inferred types, references, rename, semantic highlighting, inlay hints, cross-file navigation). When disabled or the server binary is missing, the extension falls back to its in-process providers."
+        },
+        "lumen.lsp.serverPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to lumenlance(.exe). Leave empty to use the binary bundled with the extension (or a local Lumenlance build during development)."
         }
+      }
+    },
+    "configurationDefaults": {
+      "[lumen]": {
+        "editor.formatOnType": true
       }
     }
   }

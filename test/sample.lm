@@ -1,6 +1,7 @@
 # sample.lm  exercises every grammar rule (used by test/tokenize.js)
-#[ a block comment
-   spanning lines ]#
+#[
+a block comment spanning lines
+]#
 import math
 import os
 from cffi import cbuf

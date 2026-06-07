@@ -24,25 +24,8 @@
     ["\"", "\""],
     ["'", "'"]
   ],
-  "onEnterRules": [
-    {
-      "comment": "after a line ending in ':' (block opener), add one indent",
-      "beforeText": "^\\s*(fn|if|elif|else|for|while|struct|enum|trait|impl|match|case|try|catch|with|do)\\b.*:\\s*(#.*)?$",
-      "action": { "indent": "indent" }
-    },
-    {
-      "comment": "any other line ending in a bare ':' also opens a block",
-      "beforeText": ":\\s*(#.*)?$",
-      "action": { "indent": "indent" }
-    },
-    {
-      "comment": "after return/break/continue/raise, outdent the next line",
-      "beforeText": "^\\s*(return|break|continue|raise)\\b.*$",
-      "action": { "indent": "outdent" }
-    }
-  ],
   "indentationRules": {
-    "increaseIndentPattern": "^\\s*.*:\\s*(#.*)?$",
+    "increaseIndentPattern": "^\\s*[^#\\s].*:\\s*(#.*)?$",
     "decreaseIndentPattern": "^\\s*(elif|else|case|catch)\\b.*:\\s*(#.*)?$"
   },
   "wordPattern": "[A-Za-z_][A-Za-z0-9_]*",

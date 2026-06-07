@@ -8,6 +8,9 @@ out/
 dist/
 *.tsbuildinfo
 
+# Bundled language server binary (build artifact)
+server/
+
 # Editor / OS
 .vscode-test/
 .DS_Store
