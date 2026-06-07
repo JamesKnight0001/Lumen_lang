@@ -3,6 +3,9 @@
 VS Code support for the [Lumen](https://github.com/JamesKnight0001/Lumen) language (`.lm`), powered by the bundled **Lumenlance** language server.
 **LumenLance** is Closed sourced, I will be the one providing it.
 
+# Version
+v0.13.2
+
 ## Features
 
 - Syntax highlighting and indentation support
