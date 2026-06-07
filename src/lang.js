@@ -96,12 +96,12 @@ const MODULES = {
     exit: 1, args: 0,
   },
   rand: { seed: 1, int: 2, float: 0 },
-  time: { now: 0, format: 2, sleep: 1 },
+  time: { now: 0, format: 1, sleep: 1 },
   json: { stringify: 1, parse: 1 },
   cffi: {
     cbuf: 1, len: 1, addr: 1, set_i8: 3, set_i16: 3, set_i32: 3, set_i64: 3,
     set_ptr: 3, set_f32: 3, set_f64: 3, get_i8: 2, get_i16: 2, get_i32: 2,
-    get_i64: 2, get_ptr: 2, get_f32: 2, get_f64: 2, vcall: 3, peek_i64: 1,
+    get_i64: 2, get_ptr: 2, get_f32: 2, get_f64: 2, vcall: 4, peek_i64: 1,
     poke_i64: 2, peek_i32: 1, poke_i32: 2, str_ptr: 1, guid: 1, callback: 1,
   },
 };

@@ -1,8 +1,8 @@
 # Lumen for VS Code
 
 Full language support for the
-[Lumen](https://github.com/JamesKnight0001/Lumen) language (`.lm`) — syntax
-highlighting, code intelligence, compiler-backed diagnostics, and Run/Build —
+[Lumen](https://github.com/JamesKnight0001/Lumen) language (`.lm`) - syntax
+highlighting, code intelligence, compiler-backed diagnostics, and Run/Build -
 powered by the **Lumenlance** language server (bundled).
 
 ## Features
@@ -14,7 +14,7 @@ powered by the **Lumenlance** language server (bundled).
   and the string/list/map methods after a dot.
 - **Hover** with inferred types, **signature help** (active-parameter aware),
   and **inlay type hints**.
-- **Go-to-definition** (Ctrl+Click / F12), **find references**, and **rename** —
+- **Go-to-definition** (Ctrl+Click / F12), **find references**, and **rename** -
   scope-aware and cross-file, for your own `fn`, `let`/`mut`, `struct`, fields,
   params, and imports.
 - **Semantic highlighting** and an **outline view** / breadcrumbs from your
@@ -38,7 +38,7 @@ your code.
 
 As of compiler **v0.72.0**, the server uses compiler-authoritative declaration
 spans (`lumen decls` / `parse_program_spanned`, decision **D2b**) to verify its
-in-server span recognizer never drifts from the compiler — checked over the
+in-server span recognizer never drifts from the compiler - checked over the
 whole example corpus with zero disagreement. If the server binary is missing or
 `lumen.lsp.enabled` is off, the extension falls back to its in-process providers
 and the compiler-backed diagnostics still work.
@@ -49,13 +49,13 @@ dispatch), so the editor never suggests something the compiler rejects.
 
 ## Settings
 
-- `lumen.path` — path to the `lumen` executable (default `lumen`; auto-detects
+- `lumen.path` - path to the `lumen` executable (default `lumen`; auto-detects
   the per-user install at `%LOCALAPPDATA%\Lumen\bin\lumen.exe`).
-- `lumen.diagnostics` — show live compiler errors (default `true`).
-- `lumen.smartDedent` — experimental on-Enter dedent (default `true`).
-- `lumen.lsp.enabled` — use the Lumenlance server for richer intelligence
+- `lumen.diagnostics` - show live compiler errors (default `true`).
+- `lumen.smartDedent` - experimental on-Enter dedent (default `true`).
+- `lumen.lsp.enabled` - use the Lumenlance server for richer intelligence
   (default `true`).
-- `lumen.lsp.serverPath` — override the bundled server binary (default empty =
+- `lumen.lsp.serverPath` - override the bundled server binary (default empty =
   use bundled, or a local Lumenlance build during development).
 
 ## Build
@@ -85,5 +85,5 @@ Set `lumen.path` if `lumen` isn't on your PATH. `F5` runs, `Ctrl+F5` builds.
 
 The Build command sequences "compile, then run the produced exe". It detects
 the integrated terminal shell and emits shell-correct sequencing: `A && B`
-for cmd/bash, and `A; if ($?) { & B }` for PowerShell — Windows PowerShell 5.1
+for cmd/bash, and `A; if ($?) { & B }` for PowerShell - Windows PowerShell 5.1
 rejects `&&` as a statement separator, so the old hard-coded `&&` is gone.
