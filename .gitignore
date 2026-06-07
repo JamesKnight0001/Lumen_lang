@@ -16,3 +16,4 @@ server/
 .DS_Store
 Thumbs.db
 *.log
+./test/

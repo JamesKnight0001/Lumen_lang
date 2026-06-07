@@ -86,6 +86,11 @@ const MODULES = {
   rand: { seed: 1, int: 2, float: 0 },
   time: { now: 0, format: 1, sleep: 1 },
   json: { stringify: 1, parse: 1 },
+  net: {
+    listen: 2, accept: 1, connect: 2, udp: 2, send: 2, recv: 2, sendto: 4,
+    recvfrom: 2, close: 1, shutdown: 2, set_timeout: 2, set_blocking: 2,
+    set_opt: 3, poll: 2, resolve: 1, local_port: 1, errno: 0,
+  },
   cffi: {
     cbuf: 1, len: 1, addr: 1, set_i8: 3, set_i16: 3, set_i32: 3, set_i64: 3,
     set_ptr: 3, set_f32: 3, set_f64: 3, get_i8: 2, get_i16: 2, get_i32: 2,

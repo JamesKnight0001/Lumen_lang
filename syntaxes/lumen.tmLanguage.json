@@ -263,6 +263,14 @@
           }
         },
         {
+          "match": "\\b(net)\\b(\\.)(listen|accept|connect|udp|send|recv|sendto|recvfrom|close|shutdown|set_timeout|set_blocking|set_opt|poll|resolve|local_port|errno)\\b",
+          "captures": {
+            "1": { "name": "support.class.module.lumen" },
+            "2": { "name": "punctuation.accessor.lumen" },
+            "3": { "name": "support.function.builtin.lumen" }
+          }
+        },
+        {
           "match": "\\b(cffi)\\b(\\.)(cbuf|len|addr|set_i8|set_i16|set_i32|set_i64|set_ptr|set_f32|set_f64|get_i8|get_i16|get_i32|get_i64|get_ptr|get_f32|get_f64|peek_i64|peek_i32|poke_i64|poke_i32|str_ptr|guid|vcall|callback)\\b",
           "captures": {
             "1": { "name": "support.class.module.lumen" },
@@ -276,7 +284,7 @@
     "modules": {
       "comment": "built-in module namespaces, when used as a bare qualifier",
       "name": "support.class.module.lumen",
-      "match": "\\b(math|os|rand|json|time|cffi)\\b(?=\\s*\\.)"
+      "match": "\\b(math|os|rand|json|time|net|cffi)\\b(?=\\s*\\.)"
     },
 
     "method-call": {

@@ -38,8 +38,8 @@ ok(Object.keys(lang.BUILTINS).length === 19, `19 builtins (got ${Object.keys(lan
 ok(!("sorted" in lang.BUILTINS), "no 'sorted' builtin");
 ok(Object.keys(lang.METHODS).length === 29, `29 methods (got ${Object.keys(lang.METHODS).length})`);
 const mods = Object.values(lang.MODULES).reduce((a, m) => a + Object.keys(m).length, 0);
-ok(mods === 98, `98 module funcs (got ${mods})`);
-ok(Object.keys(lang.MODULES).join(",") === "math,os,rand,time,json,cffi", "modules ok");
+ok(mods === 115, `115 module funcs (got ${mods})`);
+ok(Object.keys(lang.MODULES).join(",") === "math,os,rand,time,json,net,cffi", "modules ok");
 
 const gram = fs.readFileSync(path.join(ROOT, "syntaxes/lumen.tmLanguage.json"), "utf8");
 const has = (w) => new RegExp("[(|]" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[|)]").test(gram);

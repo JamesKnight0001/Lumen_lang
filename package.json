@@ -2,7 +2,7 @@
   "name": "lumen-lang",
   "displayName": "Lumen",
   "description": "Syntax highlighting, indentation, autocomplete, hover, go-to-definition, references, rename, semantic highlighting, inlay type hints, compiler-backed diagnostics, and Run/Build for the Lumen programming language - powered by the Lumenlance language server.",
-  "version": "0.13.0",
+  "version": "0.13.2",
   "publisher": "JamesKnight0001",
   "license": "MIT",
   "engines": { "vscode": "^1.60.0" },
