@@ -2,7 +2,7 @@
   "name": "lumen-lang",
   "displayName": "Lumen",
   "description": "Syntax highlighting, indentation, autocomplete, hover, go-to-definition, references, rename, semantic highlighting, inlay type hints, compiler-backed diagnostics, and Run/Build for the Lumen programming language - powered by the Lumenlance language server.",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "publisher": "JamesKnight0001",
   "license": "MIT",
   "engines": { "vscode": "^1.60.0" },
@@ -127,8 +127,8 @@
         },
         "lumen.lsp.serverPath": {
           "type": "string",
-          "default": "",
-          "description": "Path to lumenlance(.exe). Leave empty to use the binary bundled with the extension (or a local Lumenlance build during development)."
+          "default": "%LOCALAPPDATA%/Lumen/bin/lumenlance.exe",
+          "description": "Path to lumenlance(.exe). Environment variables are expanded (%VAR% on Windows, ${VAR}/$VAR elsewhere). Defaults to the per-user install at %LOCALAPPDATA%\\Lumen\\bin\\lumenlance.exe; if that path doesn't exist, the extension falls back to the binary bundled with the extension (or a local Lumenlance build during development)."
         }
       }
     },
