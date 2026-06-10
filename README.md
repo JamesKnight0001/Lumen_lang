@@ -6,6 +6,9 @@ VS Code support for the [Lumen](https://github.com/JamesKnight0001/Lumen) langua
 Tracks Lumen compiler **v0.77** - relative imports (`.mod` / `..mod`), default
 function arguments (`fn f(x=2)`), and numeric map keys are all recognized.
 
+## Version
+Syntax Highlighter version: v0.15.0
+
 ## Features
 
 - Syntax highlighting and indentation support
