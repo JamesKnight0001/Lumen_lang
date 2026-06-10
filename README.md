@@ -3,6 +3,9 @@
 VS Code support for the [Lumen](https://github.com/JamesKnight0001/Lumen) language (`.lm`), powered by the bundled **Lumenlance** language server.
 **LumenLance** is Closed sourced, I will be the one providing it.
 
+Tracks Lumen compiler **v0.77** - relative imports (`.mod` / `..mod`), default
+function arguments (`fn f(x=2)`), and numeric map keys are all recognized.
+
 ## Features
 
 - Syntax highlighting and indentation support
@@ -56,5 +59,12 @@ If `lumen` is not on your PATH, set `lumen.path`.
 
 The Build command compiles and then runs the produced executable, automatically using the correct command sequencing for cmd, PowerShell, and Unix shells.
 
-## Warning
-This is still very basic, not complete intelligence,
+## Status
+
+Lumenlance now provides type-aware member resolution (completion, hover,
+go-to-definition, references, and rename bind to the right struct when the
+receiver's type is provable), scope-sound cross-file rename/references,
+signature help, document highlight, and folding - on top of compiler-verbatim
+diagnostics. Member resolution falls back to name-based behavior when a
+receiver's type isn't statically provable (untyped param, value from a fn
+return); a full flow-sensitive type system would close that last gap.
